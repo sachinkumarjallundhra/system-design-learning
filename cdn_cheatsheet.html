@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CDN Cheatsheet</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <p class="hide-print"><a href="index.html">← Back to Index</a></p>
+    <h1>📦 CDN (Content Delivery Network) Cheatsheet</h1>
+
+    <img src="images/cdn_copy.png" alt="CDN Architecture" style="max-width: 50%; height: auto;">
+
+    <h2>✅ What is a CDN?</h2>
+    <p>A <strong>CDN</strong> is a geographically distributed network of servers (edge servers) that deliver content to users based on their geographic location. It helps reduce latency, increase speed, and offload the origin server.</p>
+
+    <h2>🌟 Goals of a CDN</h2>
+    <ul>
+      <li>Reduce <strong>latency</strong></li>
+      <li>Improve <strong>performance</strong></li>
+      <li>Increase <strong>availability</strong> and <strong>redundancy</strong></li>
+      <li>Handle <strong>traffic spikes</strong> efficiently</li>
+      <li>Provide <strong>security</strong> features (DDoS protection, HTTPS termination)</li>
+    </ul>
+
+    <h2>🧱 Core Components</h2>
+    <table>
+      <tr><th>Component</th><th>Description</th></tr>
+      <tr><td><strong>Client</strong></td><td>End-user making the request</td></tr>
+      <tr><td><strong>Edge Server</strong></td><td>Caches and serves content near the client</td></tr>
+      <tr><td><strong>PoP</strong></td><td>Point of Presence (location of edge server)</td></tr>
+      <tr><td><strong>Origin Server</strong></td><td>Your backend/web server</td></tr>
+      <tr><td><strong>CDN Provider</strong></td><td>Cloudflare, Akamai, Fastly, AWS CloudFront</td></tr>
+    </table>
+
+    <h2>⚙️ How It Works</h2>
+    <ol>
+      <li>Client requests a resource (e.g., image.js)</li>
+      <li>DNS routes request to nearest <strong>PoP</strong></li>
+      <li><strong>Edge server</strong> checks cache:
+        <ul>
+          <li><strong>Hit</strong> → Serve cached content</li>
+          <li><strong>Miss</strong> → Fetch from <strong>origin</strong>, cache it, serve to client</li>
+        </ul>
+      </li>
+    </ol>
+
+    <h2>🧠 Key Concepts</h2>
+    <h3>📌 Cache-Control Headers</h3>
+    <ul>
+      <li><code>Cache-Control: public, max-age=3600</code></li>
+      <li><code>ETag</code>, <code>Last-Modified</code>: validators for cache freshness</li>
+    </ul>
+
+    <h3>♻️ Cache Invalidation</h3>
+    <ul>
+      <li>TTL expiry (time-based)</li>
+      <li>Manual purge (API/UI)</li>
+      <li>URL versioning (e.g., <code>/v2/logo.png</code>)</li>
+    </ul>
+
+    <h3>🛡️ CDN Security</h3>
+    <ul>
+      <li>DDoS mitigation</li>
+      <li>TLS/SSL termination</li>
+      <li>WAF (Web Application Firewall)</li>
+    </ul>
+
+    <h2>📦 Use Cases</h2>
+    <ul>
+      <li>Static file delivery (images, JS, CSS)</li>
+      <li>Video streaming</li>
+      <li>Software downloads</li>
+      <li>API acceleration (global users)</li>
+    </ul>
+
+    <h2>🧪 CDN in Interviews</h2>
+    <ul>
+      <li>“How does your system handle global scale?”</li>
+      <li>“How do you reduce latency and improve reliability?”</li>
+      <li>Discuss TTL, cache invalidation, fallback to origin</li>
+      <li>Mention integration with Load Balancer, WAF</li>
+    </ul>
+
+    <h2>🔗 Real-World CDN Providers</h2>
+    <ul>
+      <li><strong>Cloudflare</strong> – performance + security</li>
+      <li><strong>Akamai</strong> – enterprise-grade</li>
+      <li><strong>Fastly</strong> – developer-friendly, real-time purging</li>
+      <li><strong>Amazon CloudFront</strong> – AWS-native</li>
+    </ul>
+
+    <h2>📘 References</h2>
+    <ul>
+      <li><a href="https://developers.cloudflare.com/reference-architecture/architectures/cdn/">Cloudflare CDN Reference Architecture</a></li>
+      <li><a href="https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html">AWS CloudFront Documentation</a></li>
+      <li><a href="https://cloud.google.com/cdn/docs">Google Cloud CDN Overview</a></li>
+      <li><a href="https://developer.fastly.com/learning/cdn/">Fastly CDN Basics</a></li>
+      <li><a href="https://learn.akamai.com/en-us/webhelp/performance/web-performance-architecture-guide/GUID-097D8D27-A304-4F14-A481-FB8BD5CB7927.html">Akamai Edge Network Explained</a></li>
+      <li><a href="https://blog.algomaster.io/p/content-delivery-networks">AlgoMaster: Content Delivery Networks Explained</a></li>
+    </ul>
+
+    <h2>📌 Summary</h2>
+    <p>A CDN is critical for modern web architecture — it boosts performance, reduces load, and protects against threats. Mastering how CDN fits into system design helps you shine in interviews.</p>
+
+    <blockquote>Tip: Use CDN for static assets, optimize cache headers, and always think about global latency!</blockquote>
+  </div>
+</body>
+</html>
