@@ -1,0 +1,1555 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://sachinkumarjallundhra.github.io/system-design-learning/patterns/scaling-writes/">
+      
+      
+        <link rel="prev" href="../..">
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>Scaling Writes - System Design Learning</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#scaling-writes-system-design-interview-cheat-sheet" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="System Design Learning" class="md-header__button md-logo" aria-label="System Design Learning" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            System Design Learning
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Scaling Writes
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
+          
+  
+  
+  Patterns
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../systems/instagram.md" class="md-tabs__link">
+          
+  
+  
+  Systems
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="System Design Learning" class="md-nav__button md-logo" aria-label="System Design Learning" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    System Design Learning
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Patterns
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Patterns
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scaling Writes
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scaling Writes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-scaling-writes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎯 What Is Scaling Writes?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#core-interview-insight" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧠 Core Interview Insight
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-4-fundamental-write-scaling-strategies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧩 The 4 Fundamental Write-Scaling Strategies
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🧩 The 4 Fundamental Write-Scaling Strategies">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-vertical-scaling-write-optimization-start-here" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1️⃣ Vertical Scaling &amp; Write Optimization (Start Here)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1️⃣ Vertical Scaling &amp; Write Optimization (Start Here)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vertical-scaling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vertical Scaling
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#write-optimizations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Write Optimizations
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-database-choices-write-vs-read-tradeoff" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2️⃣ Database Choices (Write vs Read Tradeoff)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2️⃣ Database Choices (Write vs Read Tradeoff)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-idea" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Idea
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#examples-of-write-optimized-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Examples of Write-Optimized Storage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#general-optimizations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        General Optimizations
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-sharding-partitioning-horizontal-scaling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3️⃣ Sharding &amp; Partitioning (Horizontal Scaling)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3️⃣ Sharding &amp; Partitioning (Horizontal Scaling)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#horizontal-sharding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Horizontal Sharding
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Horizontal Sharding">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#choosing-a-good-partition-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Choosing a Good Partition Key
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vertical-partitioning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vertical Partitioning
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-handling-bursts-queues-load-shedding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4️⃣ Handling Bursts: Queues &amp; Load Shedding
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4️⃣ Handling Bursts: Queues &amp; Load Shedding">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#write-queues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Write Queues
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#load-shedding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Load Shedding
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-batching-hierarchical-aggregation-big-wins" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5️⃣ Batching &amp; Hierarchical Aggregation (Big Wins)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5️⃣ Batching &amp; Hierarchical Aggregation (Big Wins)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#batching" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Batching
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hierarchical-aggregation-extreme-scale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hierarchical Aggregation (Extreme Scale)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-interview-deep-dives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔥 Common Interview Deep Dives
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔥 Common Interview Deep Dives">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#resharding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔁 Resharding
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hot-keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔥 Hot Keys
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#when-to-use-and-when-not-to" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧪 When to Use (and When Not To)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🧪 When to Use (and When Not To)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use-when" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ✅ Use When:
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#avoid-when" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ❌ Avoid When:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#final-interview-takeaway" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧠 Final Interview Takeaway
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Systems
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Systems
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../systems/instagram.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Instagram
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../systems/youtube.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    YouTube
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-scaling-writes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎯 What Is Scaling Writes?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#core-interview-insight" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧠 Core Interview Insight
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-4-fundamental-write-scaling-strategies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧩 The 4 Fundamental Write-Scaling Strategies
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🧩 The 4 Fundamental Write-Scaling Strategies">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-vertical-scaling-write-optimization-start-here" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1️⃣ Vertical Scaling &amp; Write Optimization (Start Here)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1️⃣ Vertical Scaling &amp; Write Optimization (Start Here)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vertical-scaling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vertical Scaling
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#write-optimizations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Write Optimizations
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-database-choices-write-vs-read-tradeoff" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2️⃣ Database Choices (Write vs Read Tradeoff)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2️⃣ Database Choices (Write vs Read Tradeoff)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-idea" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Idea
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#examples-of-write-optimized-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Examples of Write-Optimized Storage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#general-optimizations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        General Optimizations
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-sharding-partitioning-horizontal-scaling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3️⃣ Sharding &amp; Partitioning (Horizontal Scaling)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3️⃣ Sharding &amp; Partitioning (Horizontal Scaling)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#horizontal-sharding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Horizontal Sharding
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Horizontal Sharding">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#choosing-a-good-partition-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Choosing a Good Partition Key
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vertical-partitioning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vertical Partitioning
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-handling-bursts-queues-load-shedding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4️⃣ Handling Bursts: Queues &amp; Load Shedding
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4️⃣ Handling Bursts: Queues &amp; Load Shedding">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#write-queues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Write Queues
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#load-shedding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Load Shedding
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-batching-hierarchical-aggregation-big-wins" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5️⃣ Batching &amp; Hierarchical Aggregation (Big Wins)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5️⃣ Batching &amp; Hierarchical Aggregation (Big Wins)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#batching" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Batching
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hierarchical-aggregation-extreme-scale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hierarchical Aggregation (Extreme Scale)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-interview-deep-dives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔥 Common Interview Deep Dives
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔥 Common Interview Deep Dives">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#resharding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔁 Resharding
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hot-keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔥 Hot Keys
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#when-to-use-and-when-not-to" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧪 When to Use (and When Not To)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🧪 When to Use (and When Not To)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use-when" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ✅ Use When:
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#avoid-when" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ❌ Avoid When:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#final-interview-takeaway" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧠 Final Interview Takeaway
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="scaling-writes-system-design-interview-cheat-sheet">📈 Scaling Writes — System Design Interview Cheat Sheet<a class="headerlink" href="#scaling-writes-system-design-interview-cheat-sheet" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p>A practical, interview-ready guide to handling high-volume write traffic in large-scale systems.</p>
+</blockquote>
+<hr />
+<h2 id="what-is-scaling-writes">🎯 What Is Scaling Writes?<a class="headerlink" href="#what-is-scaling-writes" title="Permanent link">&para;</a></h2>
+<p><strong>Scaling writes</strong> is the challenge of handling <strong>high-throughput, bursty write operations</strong> when a single database or server becomes a bottleneck due to:
+- Disk I/O limits
+- CPU saturation
+- Network bandwidth constraints</p>
+<p><img alt="Sharding Writes" src="../Write-Challenge.png" /></p>
+<p>Unlike reads (which are easy to cache or replicate), <strong>writes are harder to scale</strong> and are a favorite topic in system design interviews.</p>
+<hr />
+<h2 id="core-interview-insight">🧠 Core Interview Insight<a class="headerlink" href="#core-interview-insight" title="Permanent link">&para;</a></h2>
+<blockquote>
+<p><strong>Write scaling is about reducing load per component</strong> — not just adding hardware.</p>
+</blockquote>
+<p>You do this by:
+- Spreading writes
+- Smoothing bursts
+- Reducing write frequency
+- Dropping low-value writes when necessary</p>
+<hr />
+<h2 id="the-4-fundamental-write-scaling-strategies">🧩 The 4 Fundamental Write-Scaling Strategies<a class="headerlink" href="#the-4-fundamental-write-scaling-strategies" title="Permanent link">&para;</a></h2>
+<h3 id="1-vertical-scaling-write-optimization-start-here">1️⃣ Vertical Scaling &amp; Write Optimization (Start Here)<a class="headerlink" href="#1-vertical-scaling-write-optimization-start-here" title="Permanent link">&para;</a></h3>
+<p>Before adding architectural complexity, always check if a <strong>single machine</strong> can go further.</p>
+<h4 id="vertical-scaling">Vertical Scaling<a class="headerlink" href="#vertical-scaling" title="Permanent link">&para;</a></h4>
+<ul>
+<li>Upgrade CPU, RAM, SSDs, and network</li>
+<li>Modern servers can handle <strong>far more writes</strong> than many candidates assume</li>
+<li>Use back-of-the-envelope math to validate limits</li>
+</ul>
+<h4 id="write-optimizations">Write Optimizations<a class="headerlink" href="#write-optimizations" title="Permanent link">&para;</a></h4>
+<ul>
+<li>Reduce number of indexes</li>
+<li>Batch write-ahead-log (WAL) flushes</li>
+<li>Disable expensive DB features during high-write periods:</li>
+<li>Foreign keys</li>
+<li>Triggers</li>
+<li>Full-text indexes</li>
+</ul>
+<p>📌 <strong>Interview Tip:</strong> Show restraint — don’t shard prematurely.</p>
+<hr />
+<h3 id="2-database-choices-write-vs-read-tradeoff">2️⃣ Database Choices (Write vs Read Tradeoff)<a class="headerlink" href="#2-database-choices-write-vs-read-tradeoff" title="Permanent link">&para;</a></h3>
+<p>Some databases are optimized specifically for <strong>write-heavy workloads</strong>.</p>
+<h4 id="key-idea">Key Idea<a class="headerlink" href="#key-idea" title="Permanent link">&para;</a></h4>
+<ul>
+<li>Optimizing writes often <strong>hurts reads</strong></li>
+<li>You must identify the real bottleneck first</li>
+</ul>
+<h4 id="examples-of-write-optimized-storage">Examples of Write-Optimized Storage<a class="headerlink" href="#examples-of-write-optimized-storage" title="Permanent link">&para;</a></h4>
+<ul>
+<li>Append-only / log-structured storage</li>
+<li>Time-series databases (sequential writes)</li>
+<li>Column-oriented databases (batch-friendly)</li>
+</ul>
+<h4 id="general-optimizations">General Optimizations<a class="headerlink" href="#general-optimizations" title="Permanent link">&para;</a></h4>
+<ul>
+<li>Fewer indexes = faster writes</li>
+<li>Larger batch commits</li>
+<li>Sequential disk access &gt; random seeks</li>
+</ul>
+<p>📌 <strong>Interview Signal:</strong> Explain <em>why</em> a DB is good for writes, not just <em>which</em> DB.</p>
+<hr />
+<h3 id="3-sharding-partitioning-horizontal-scaling">3️⃣ Sharding &amp; Partitioning (Horizontal Scaling)<a class="headerlink" href="#3-sharding-partitioning-horizontal-scaling" title="Permanent link">&para;</a></h3>
+<p>When one machine is no longer enough, distribute writes across many.</p>
+<hr />
+<h4 id="horizontal-sharding">Horizontal Sharding<a class="headerlink" href="#horizontal-sharding" title="Permanent link">&para;</a></h4>
+<ul>
+<li>Split data across multiple servers (shards)</li>
+<li>Route writes using a <strong>partitioning key</strong></li>
+</ul>
+<h5 id="choosing-a-good-partition-key">Choosing a Good Partition Key<a class="headerlink" href="#choosing-a-good-partition-key" title="Permanent link">&para;</a></h5>
+<ul>
+<li>Goal: <strong>even distribution of writes</strong></li>
+<li>Good keys:</li>
+<li>userId</li>
+<li>postId</li>
+<li>Bad keys:</li>
+<li>country</li>
+<li>region</li>
+</ul>
+<p>⚠️ Poor keys create <strong>hot shards</strong> and wasted capacity.</p>
+<p>📌 Always ask:
+- How many shards does one request hit?
+- How often does that request happen?</p>
+<hr />
+<h4 id="vertical-partitioning">Vertical Partitioning<a class="headerlink" href="#vertical-partitioning" title="Permanent link">&para;</a></h4>
+<p>Split data by <strong>access pattern</strong>, not rows.</p>
+<p>Example (Social Media Post):
+- Post content → write-once, read-many
+- Engagement metrics → high-frequency writes
+- Analytics/events → append-only</p>
+<p>Benefits:
+- Each dataset can scale independently
+- Different storage engines per workload</p>
+<p>📌 This is a <strong>data modeling</strong> problem as much as a scaling problem.</p>
+<hr />
+<h3 id="4-handling-bursts-queues-load-shedding">4️⃣ Handling Bursts: Queues &amp; Load Shedding<a class="headerlink" href="#4-handling-bursts-queues-load-shedding" title="Permanent link">&para;</a></h3>
+<p>Real-world traffic is <strong>not steady</strong> — bursts are inevitable.</p>
+<hr />
+<h4 id="write-queues">Write Queues<a class="headerlink" href="#write-queues" title="Permanent link">&para;</a></h4>
+<p>Used to absorb <strong>short-lived spikes</strong> in traffic.</p>
+<p>Benefits:
+- Decouples write acceptance from processing
+- Smooths bursty traffic</p>
+<p>Tradeoffs:
+- Async writes
+- Eventual consistency
+- Risk of unbounded backlog if steady-state is broken</p>
+<p>📌 Use queues for <strong>bursts</strong>, not as a band-aid for insufficient capacity.</p>
+<hr />
+<h4 id="load-shedding">Load Shedding<a class="headerlink" href="#load-shedding" title="Permanent link">&para;</a></h4>
+<p>When overloaded, <strong>reject or drop low-value writes</strong>.</p>
+<p>Examples:
+- Drop frequent location updates
+- Drop impressions but keep clicks
+- Ignore near-duplicate updates</p>
+<p>📌 Better to partially degrade than to fail entirely.</p>
+<hr />
+<h3 id="5-batching-hierarchical-aggregation-big-wins">5️⃣ Batching &amp; Hierarchical Aggregation (Big Wins)<a class="headerlink" href="#5-batching-hierarchical-aggregation-big-wins" title="Permanent link">&para;</a></h3>
+<p>Instead of accepting every write as-is, <strong>change the shape of writes</strong>.</p>
+<hr />
+<h4 id="batching">Batching<a class="headerlink" href="#batching" title="Permanent link">&para;</a></h4>
+<p>Combine many writes into fewer operations.</p>
+<p>Where batching can happen:
+- Application layer
+- Intermediate processors
+- Database layer</p>
+<p>Benefits:
+- Fewer network calls
+- Lower transaction overhead</p>
+<p>Tradeoffs:
+- Added latency
+- Possible data loss if the app crashes</p>
+<p>📌 Batching only helps if many writes target the same data.</p>
+<hr />
+<h4 id="hierarchical-aggregation-extreme-scale">Hierarchical Aggregation (Extreme Scale)<a class="headerlink" href="#hierarchical-aggregation-extreme-scale" title="Permanent link">&para;</a></h4>
+<p>Used in analytics, metrics, and live systems.</p>
+<p>Pattern:
+- Aggregate writes in stages
+- Reduce data volume at each step</p>
+<p>Examples:
+- Likes/comments aggregation
+- Stream analytics
+- Live dashboards</p>
+<p>📌 Converts <strong>N×M writes</strong> into <strong>manageable batches</strong> at the cost of latency.</p>
+<hr />
+<h2 id="common-interview-deep-dives">🔥 Common Interview Deep Dives<a class="headerlink" href="#common-interview-deep-dives" title="Permanent link">&para;</a></h2>
+<h3 id="resharding">🔁 Resharding<a class="headerlink" href="#resharding" title="Permanent link">&para;</a></h3>
+<p>Problem: Need to add shards without downtime.</p>
+<p>Solution:
+- Gradual migration
+- Dual writes (old + new shards)
+- Read preference for new shards</p>
+<hr />
+<h3 id="hot-keys">🔥 Hot Keys<a class="headerlink" href="#hot-keys" title="Permanent link">&para;</a></h3>
+<p>When a single key overwhelms a shard.</p>
+<p>Solutions:
+- Split key into multiple sub-keys
+- Aggregate on reads
+- Dynamic splitting for viral items</p>
+<p>Tradeoffs:
+- Write amplification
+- Read amplification</p>
+<p>📌 Works best for <strong>counters and metrics</strong>, not atomic objects.</p>
+<hr />
+<h2 id="when-to-use-and-when-not-to">🧪 When to Use (and When Not To)<a class="headerlink" href="#when-to-use-and-when-not-to" title="Permanent link">&para;</a></h2>
+<h3 id="use-when">✅ Use When:<a class="headerlink" href="#use-when" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Write throughput is the main bottleneck</li>
+<li>Traffic is bursty or unpredictable</li>
+<li>System handles metrics, feeds, analytics</li>
+</ul>
+<h3 id="avoid-when">❌ Avoid When:<a class="headerlink" href="#avoid-when" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Scale is small</li>
+<li>Latency requirements are strict</li>
+<li>Complexity outweighs benefit</li>
+</ul>
+<p>📌 Always justify with quick math.</p>
+<hr />
+<h2 id="final-interview-takeaway">🧠 Final Interview Takeaway<a class="headerlink" href="#final-interview-takeaway" title="Permanent link">&para;</a></h2>
+<blockquote>
+<p><strong>Scaling writes = making each component handle manageable load</strong></p>
+</blockquote>
+<p>You achieve this by:
+- Sharding writes
+- Smoothing bursts
+- Batching operations
+- Aggregating data
+- Dropping low-value writes</p>
+<p>Strong candidates:
+- Identify write bottlenecks early
+- Apply the simplest solution first
+- Clearly explain tradeoffs</p>
+<hr />
+<p>✅ This pattern appears frequently in:
+- Social media systems
+- News feeds
+- Search indexing
+- Analytics pipelines
+- Live streaming platforms</p>
+<hr />
+<p><strong>End of Cheat Sheet</strong></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "search.highlight", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
