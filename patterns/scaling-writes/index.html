@@ -1355,17 +1355,13 @@
 <h4 id="horizontal-sharding">Horizontal Sharding<a class="headerlink" href="#horizontal-sharding" title="Permanent link">&para;</a></h4>
 <ul>
 <li>Split data across multiple servers (shards)</li>
-<li>Route writes using a <strong>partitioning key</strong></li>
+<li>Route writes using a <strong>partitioning key</strong>
+  <img alt="Redis Cluster" src="../Redis-Cluster.png" /></li>
 </ul>
 <h5 id="choosing-a-good-partition-key">Choosing a Good Partition Key<a class="headerlink" href="#choosing-a-good-partition-key" title="Permanent link">&para;</a></h5>
 <ul>
-<li>Goal: <strong>even distribution of writes</strong></li>
-<li>Good keys:</li>
-<li>userId</li>
-<li>postId</li>
-<li>Bad keys:</li>
-<li>country</li>
-<li>region</li>
+<li>Goal: <strong>even distribution of writes</strong>
+  <img alt="Partition Key" src="../partitionKey.png" /></li>
 </ul>
 <p>⚠️ Poor keys create <strong>hot shards</strong> and wasted capacity.</p>
 <p>📌 Always ask:
@@ -1387,7 +1383,8 @@
 <p>Real-world traffic is <strong>not steady</strong> — bursts are inevitable.</p>
 <hr />
 <h4 id="write-queues">Write Queues<a class="headerlink" href="#write-queues" title="Permanent link">&para;</a></h4>
-<p>Used to absorb <strong>short-lived spikes</strong> in traffic.</p>
+<p>Used to absorb <strong>short-lived spikes</strong> in traffic.
+<img alt="Write Queues" src="../WriteQueues.png" /></p>
 <p>Benefits:
 - Decouples write acceptance from processing
 - Smooths bursty traffic</p>
@@ -1398,8 +1395,9 @@
 <p>📌 Use queues for <strong>bursts</strong>, not as a band-aid for insufficient capacity.</p>
 <hr />
 <h4 id="load-shedding">Load Shedding<a class="headerlink" href="#load-shedding" title="Permanent link">&para;</a></h4>
-<p>When overloaded, <strong>reject or drop low-value writes</strong>.</p>
-<p>Examples:
+<p>When overloaded, <strong>reject or drop low-value writes</strong>.
+<img alt="Load Shedding" src="../LoadShedding.png" />
+Examples:
 - Drop frequent location updates
 - Drop impressions but keep clicks
 - Ignore near-duplicate updates</p>
@@ -1413,6 +1411,7 @@
 <p>Where batching can happen:
 - Application layer
 - Intermediate processors
+<img alt="Batching Writes" src="../LikeBatch.png" />
 - Database layer</p>
 <p>Benefits:
 - Fewer network calls
@@ -1424,13 +1423,15 @@
 <hr />
 <h4 id="hierarchical-aggregation-extreme-scale">Hierarchical Aggregation (Extreme Scale)<a class="headerlink" href="#hierarchical-aggregation-extreme-scale" title="Permanent link">&para;</a></h4>
 <p>Used in analytics, metrics, and live systems.</p>
+<p><img alt="LiveComments" src="../LiveComment.png" /></p>
 <p>Pattern:
 - Aggregate writes in stages
 - Reduce data volume at each step</p>
 <p>Examples:
 - Likes/comments aggregation
 - Stream analytics
-- Live dashboards</p>
+- Live dashboards
+  <img alt="Hierarchical Aggregation" src="../HierarchicalAggregation.png" /></p>
 <p>📌 Converts <strong>N×M writes</strong> into <strong>manageable batches</strong> at the cost of latency.</p>
 <hr />
 <h2 id="common-interview-deep-dives">🔥 Common Interview Deep Dives<a class="headerlink" href="#common-interview-deep-dives" title="Permanent link">&para;</a></h2>
